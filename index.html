@@ -203,8 +203,8 @@ function drawGirlLike(img,x,y,mode){
 
 function drawBoy(x,y,hits,flash,finalKnock){
   const hit=hits>0;
-  const skin=hit?'#e89a78':'#e8b089';
-  const skinDeep=hit?'#d48464':'#d4976e';
+  const skin=hit?'#e89a78':'#f0c09a';
+  const skinDeep=hit?'#d48464':'#e0a878';
   const kx = hits*4 + (finalKnock? Math.min((G.animTimer-G.punchTimes[4]-6)*1.4,26):0);
   const ang = -Math.min(hits*7,26) - (finalKnock? Math.min((G.animTimer-G.punchTimes[4]-6)*1.2,20):0);
   const jolt = flash? (Math.random()-0.5)*4 : 0;
@@ -219,128 +219,109 @@ function drawBoy(x,y,hits,flash,finalKnock){
   ctx.rotate(ang*Math.PI/180);
   ctx.translate(-cx*scale,-(y+18)*scale);
 
-  // shoes
-  rrect(x+1.5,y+35,7.5,4.5,2,'#1a1410');
-  rrect(x+11,y+35,7.5,4.5,2,'#1a1410');
-  rrect(x+1.5,y+37.5,7.5,2,1,'#0d0a08');
-  rrect(x+11,y+37.5,7.5,2,1,'#0d0a08');
-  // legs / jeans
-  let lg=ctx.createLinearGradient(0,(y+26)*scale,0,(y+36)*scale);
-  lg.addColorStop(0,'#4a5568'); lg.addColorStop(1,'#2d3644');
-  ctx.fillStyle=lg;
-  ctx.beginPath();ctx.roundRect((x+3)*scale,(y+26)*scale,6.2*scale,11*scale,2*scale);ctx.fill();
-  ctx.beginPath();ctx.roundRect((x+10.8)*scale,(y+26)*scale,6.2*scale,11*scale,2*scale);ctx.fill();
-  // torso white polo
-  let bg=ctx.createLinearGradient(0,(y+12)*scale,0,(y+29)*scale);
-  if(hit){const r=Math.min(215+hits*8,255);bg.addColorStop(0,'#ff9d8f');bg.addColorStop(1,'rgb('+r+',66,56)');}
-  else{bg.addColorStop(0,'#ffffff');bg.addColorStop(0.55,'#f0f3f6');bg.addColorStop(1,'#d5dde6');}
-  ctx.fillStyle=bg;
-  ctx.beginPath();ctx.roundRect((x+0.5)*scale,(y+12)*scale,19*scale,16.5*scale,4.5*scale);ctx.fill();
-  // shirt soft side shade
-  ctx.fillStyle='rgba(0,0,0,0.05)';
-  ctx.fillRect((x+15.5)*scale,(y+12)*scale,4*scale,16.5*scale);
-  // collar V
-  ctx.fillStyle=hit?'rgba(100,18,12,.45)':'rgba(70,80,95,.28)';
-  ctx.beginPath();
-  ctx.moveTo((x+6.5)*scale,(y+12)*scale);
-  ctx.lineTo((cx)*scale,(y+17.2)*scale);
-  ctx.lineTo((x+13.5)*scale,(y+12)*scale);
-  ctx.closePath(); ctx.fill();
-  // mercedes logo centered on chest
+  // shoes — black with light toe
+  rrect(x+1.2,y+35,7.6,4.5,1.5,'#1a1a1a');
+  rrect(x+11.2,y+35,7.6,4.5,1.5,'#1a1a1a');
+  rrect(x+1.5,y+37.8,4,1.6,0.6,'#c8c8c8');
+  rrect(x+11.5,y+37.8,4,1.6,0.6,'#c8c8c8');
+  // blue jeans
+  ctx.fillStyle='#3a7ad4';
+  ctx.beginPath();ctx.roundRect((x+3)*scale,(y+26.5)*scale,6*scale,10*scale,1.5*scale);ctx.fill();
+  ctx.beginPath();ctx.roundRect((x+11)*scale,(y+26.5)*scale,6*scale,10*scale,1.5*scale);ctx.fill();
+  // belt
+  rrect(x+1.5,y+25.2,17,2.2,0.6,'#1a1a1a');
+  rrect(x+8.5,y+25.4,3,1.8,0.4,'#9aa0a8');
+  // white t-shirt body
+  if(hit){
+    const r=Math.min(215+hits*8,255);
+    ctx.fillStyle='rgb('+r+',66,56)';
+  } else {
+    ctx.fillStyle='#ffffff';
+  }
+  ctx.beginPath();ctx.roundRect((x+1)*scale,(y+11.5)*scale,18*scale,14.5*scale,2.5*scale);ctx.fill();
+  // short sleeves
+  rrect(x-2.5,y+12,4.5,5.5,1.5, hit?'#ff9d8f':'#ffffff');
+  rrect(x+18,y+12,4.5,5.5,1.5, hit?'#ff9d8f':'#ffffff');
+  // mercedes logo dead-center on t-shirt
   if(IMG.logo.complete && IMG.logo.naturalWidth){
-    const logoSz=9.5, lx=cx-logoSz/2, ly=y+18.5;
+    const logoSz=10, ly=y+14.5;
     ctx.save();
     ctx.beginPath();
-    ctx.arc(cx*scale,(ly+logoSz/2)*scale,(logoSz/2+0.6)*scale,0,Math.PI*2);
+    ctx.arc(cx*scale,(ly+logoSz/2)*scale,(logoSz/2+0.5)*scale,0,Math.PI*2);
     ctx.fillStyle='#fff'; ctx.fill();
-    ctx.strokeStyle=hit?'rgba(120,30,20,.35)':'rgba(0,0,0,.12)';
-    ctx.lineWidth=Math.max(1,0.7*scale); ctx.stroke();
+    ctx.strokeStyle='rgba(0,0,0,.18)';
+    ctx.lineWidth=Math.max(1,0.8*scale); ctx.stroke();
     ctx.beginPath();
     ctx.arc(cx*scale,(ly+logoSz/2)*scale,(logoSz/2)*scale,0,Math.PI*2);
     ctx.clip();
-    ctx.drawImage(IMG.logo,lx*scale,ly*scale,logoSz*scale,logoSz*scale);
+    ctx.drawImage(IMG.logo,(cx-logoSz/2)*scale,ly*scale,logoSz*scale,logoSz*scale);
     ctx.restore();
   }
-  // arms
-  rrect(x-3.2,y+13.5,5.2,12,2.6,skin);
-  rrect(x+18,y+13.5,5.2,12,2.6,skin);
+  // arms under sleeves
+  rrect(x-2.8,y+16.5,4.2,8.5,2,skin);
+  rrect(x+18.6,y+16.5,4.2,8.5,2,skin);
   // hands
-  rrect(x-3.4,y+23.5,5.4,4,2,skinDeep);
-  rrect(x+18,y+23.5,5.4,4,2,skinDeep);
+  rrect(x-3,y+24,4.6,3.6,1.8,skinDeep);
+  rrect(x+18.4,y+24,4.6,3.6,1.8,skinDeep);
   // neck
-  rrect(x+7.5,y+8.5,5,4.5,1.2,skin);
+  rrect(x+7.5,y+8.2,5,4,1,skin);
   // head
-  let hg=ctx.createLinearGradient(0,(y-5)*scale,0,(y+12)*scale);
-  hg.addColorStop(0,skin); hg.addColorStop(1,skinDeep);
-  ctx.fillStyle=hg;
-  ctx.beginPath();ctx.roundRect((x+1.5)*scale,(y-5)*scale,17*scale,17.5*scale,7*scale);ctx.fill();
+  ctx.fillStyle=skin;
+  ctx.beginPath();ctx.roundRect((x+1.5)*scale,(y-4)*scale,17*scale,15.5*scale,5*scale);ctx.fill();
   // ears
-  rrect(x-0.2,y+2,2.4,4.2,1.5,skinDeep);
-  rrect(x+17.8,y+2,2.4,4.2,1.5,skinDeep);
-  // hair — clean short side-part
-  const hair='#221910', hairLite='#2e241a';
+  rrect(x-0.3,y+2,2.3,3.8,1.4,skinDeep);
+  rrect(x+18,y+2,2.3,3.8,1.4,skinDeep);
+  // hair — pixel bowl cut like reference (black, forehead fringe)
+  const hair='#0a0a0a';
   ctx.fillStyle=hair;
-  // main crown
+  // top cap with slight spikes
   ctx.beginPath();
-  ctx.moveTo((x+1)*scale,(y+1)*scale);
-  ctx.bezierCurveTo((x+0.5)*scale,(y-8)*scale,(x+4)*scale,(y-11)*scale,(cx)*scale,(y-11.2)*scale);
-  ctx.bezierCurveTo((x+16)*scale,(y-11)*scale,(x+19.5)*scale,(y-8)*scale,(x+19)*scale,(y+1)*scale);
-  ctx.quadraticCurveTo((x+18.5)*scale,(y-1.5)*scale,(x+16.5)*scale,(y-0.5)*scale);
-  ctx.quadraticCurveTo((cx)*scale,(y-2.2)*scale,(x+3.5)*scale,(y-0.5)*scale);
-  ctx.quadraticCurveTo((x+1.5)*scale,(y-1.5)*scale,(x+1)*scale,(y+1)*scale);
+  ctx.moveTo((x+1)*scale,(y+2)*scale);
+  ctx.lineTo((x+0.5)*scale,(y-2)*scale);
+  ctx.lineTo((x+1.5)*scale,(y-7)*scale);
+  ctx.lineTo((x+4)*scale,(y-9.2)*scale);
+  ctx.lineTo((x+7)*scale,(y-10)*scale);
+  ctx.lineTo((cx)*scale,(y-10.4)*scale);
+  ctx.lineTo((x+13)*scale,(y-10)*scale);
+  ctx.lineTo((x+16)*scale,(y-9.2)*scale);
+  ctx.lineTo((x+18.5)*scale,(y-7)*scale);
+  ctx.lineTo((x+19.5)*scale,(y-2)*scale);
+  ctx.lineTo((x+19)*scale,(y+2)*scale);
+  // fringe across forehead
+  ctx.lineTo((x+17.5)*scale,(y+3.2)*scale);
+  ctx.lineTo((x+15)*scale,(y+2.4)*scale);
+  ctx.lineTo((x+13)*scale,(y+3.5)*scale);
+  ctx.lineTo((cx)*scale,(y+4.2)*scale); // middle fringe dip
+  ctx.lineTo((x+7)*scale,(y+3.5)*scale);
+  ctx.lineTo((x+5)*scale,(y+2.4)*scale);
+  ctx.lineTo((x+2.5)*scale,(y+3.2)*scale);
   ctx.closePath(); ctx.fill();
-  // left side taper
-  ctx.beginPath();
-  ctx.moveTo((x+0.8)*scale,(y+1)*scale);
-  ctx.quadraticCurveTo((x-0.4)*scale,(y+3)*scale,(x+0.6)*scale,(y+6.5)*scale);
-  ctx.quadraticCurveTo((x+1.8)*scale,(y+4)*scale,(x+2.2)*scale,(y+1.5)*scale);
-  ctx.closePath(); ctx.fill();
-  // right side taper
-  ctx.beginPath();
-  ctx.moveTo((x+19.2)*scale,(y+1)*scale);
-  ctx.quadraticCurveTo((x+20.4)*scale,(y+3)*scale,(x+19.4)*scale,(y+6.5)*scale);
-  ctx.quadraticCurveTo((x+18.2)*scale,(y+4)*scale,(x+17.8)*scale,(y+1.5)*scale);
-  ctx.closePath(); ctx.fill();
-  // soft fringe / side part sweep
-  ctx.fillStyle=hairLite;
-  ctx.beginPath();
-  ctx.moveTo((x+2.5)*scale,(y-1)*scale);
-  ctx.quadraticCurveTo((x+6)*scale,(y-4.5)*scale,(x+9.5)*scale,(y-1.2)*scale);
-  ctx.quadraticCurveTo((x+13)*scale,(y-4)*scale,(x+17)*scale,(y-0.8)*scale);
-  ctx.quadraticCurveTo((x+14)*scale,(y-3.2)*scale,(cx)*scale,(y-3.5)*scale);
-  ctx.quadraticCurveTo((x+5)*scale,(y-3.5)*scale,(x+2.5)*scale,(y-1)*scale);
-  ctx.closePath(); ctx.fill();
+  // sideburns short
+  px(x+0.6,y+2,2.2,4.5,hair);
+  px(x+17.2,y+2,2.2,4.5,hair);
   // face
   if(hits>=3){
     ctx.strokeStyle='#1a1208'; ctx.lineWidth=Math.max(1,1.1*scale);
     ctx.beginPath();
-    ctx.moveTo((x+6)*scale,(y+1.5)*scale);ctx.lineTo((x+8.2)*scale,(y+3.8)*scale);
-    ctx.moveTo((x+8.2)*scale,(y+1.5)*scale);ctx.lineTo((x+6)*scale,(y+3.8)*scale);
-    ctx.moveTo((x+11.8)*scale,(y+1.5)*scale);ctx.lineTo((x+14)*scale,(y+3.8)*scale);
-    ctx.moveTo((x+14)*scale,(y+1.5)*scale);ctx.lineTo((x+11.8)*scale,(y+3.8)*scale);
+    ctx.moveTo((x+5.8)*scale,(y+4.5)*scale);ctx.lineTo((x+8)*scale,(y+6.5)*scale);
+    ctx.moveTo((x+8)*scale,(y+4.5)*scale);ctx.lineTo((x+5.8)*scale,(y+6.5)*scale);
+    ctx.moveTo((x+12)*scale,(y+4.5)*scale);ctx.lineTo((x+14.2)*scale,(y+6.5)*scale);
+    ctx.moveTo((x+14.2)*scale,(y+4.5)*scale);ctx.lineTo((x+12)*scale,(y+6.5)*scale);
     ctx.stroke();
     ctx.strokeStyle='rgba(120,15,15,.75)'; ctx.lineWidth=Math.max(1,1*scale);
-    ctx.beginPath(); ctx.arc(cx*scale,(y+8.2)*scale,2.4*scale,0.25,Math.PI-0.25); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx*scale,(y+9.5)*scale,2.2*scale,0.25,Math.PI-0.25); ctx.stroke();
   } else if(hit){
-    rrect(x+5.8,y+1.5,2.8,2.8,0.7,'#fff'); rrect(x+11.4,y+1.5,2.8,2.8,0.7,'#fff');
-    rrect(x+6.5,y+2.2,1.4,1.4,0.4,'#3a2218'); rrect(x+12.1,y+2.2,1.4,1.4,0.4,'#3a2218');
+    // blue eyes wide / scared
+    rrect(x+5.2,y+4.5,3.2,3.4,0.8,'#fff'); rrect(x+11.6,y+4.5,3.2,3.4,0.8,'#fff');
+    rrect(x+5.9,y+5.2,1.8,2,'#3a9adf'); rrect(x+12.3,y+5.2,1.8,2,'#3a9adf');
     ctx.strokeStyle='#3a2a20'; ctx.lineWidth=Math.max(1,0.85*scale);
-    ctx.beginPath(); ctx.arc(cx*scale,(y+8.5)*scale,2.5*scale,0.2,Math.PI-0.2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx*scale,(y+9.8)*scale,2.3*scale,0.2,Math.PI-0.2); ctx.stroke();
   } else {
-    // brows
-    ctx.strokeStyle='#2a2118'; ctx.lineWidth=Math.max(1,0.9*scale);
-    ctx.beginPath();
-    ctx.moveTo((x+5.5)*scale,(y+0.6)*scale);ctx.lineTo((x+8.5)*scale,(y+0.2)*scale);
-    ctx.moveTo((x+11.5)*scale,(y+0.2)*scale);ctx.lineTo((x+14.5)*scale,(y+0.6)*scale);
-    ctx.stroke();
-    // eyes
-    rrect(x+5.9,y+2.2,2.5,2.6,0.7,'#fff'); rrect(x+11.6,y+2.2,2.5,2.6,0.7,'#fff');
-    rrect(x+6.5,y+2.8,1.5,1.6,0.5,'#2a1c12'); rrect(x+12.2,y+2.8,1.5,1.6,0.5,'#2a1c12');
-    px(x+6.7,y+2.9,0.7,0.7,'#fff'); px(x+12.4,y+2.9,0.7,0.7,'#fff');
-    // nose hint + mouth
-    px(x+9.2,y+5.8,1.6,1.8,skinDeep);
-    ctx.strokeStyle='#c17a55'; ctx.lineWidth=Math.max(1,0.75*scale);
-    ctx.beginPath(); ctx.arc(cx*scale,(y+8.6)*scale,1.9*scale,0.2,Math.PI-0.2); ctx.stroke();
+    // blue eyes like reference
+    rrect(x+5.2,y+4.8,3.2,3.2,0.8,'#fff'); rrect(x+11.6,y+4.8,3.2,3.2,0.8,'#fff');
+    rrect(x+5.9,y+5.4,1.9,2,'#2f8fd6'); rrect(x+12.3,y+5.4,1.9,2,'#2f8fd6');
+    px(x+6.1,y+5.5,0.9,0.9,'#0d1a28'); px(x+12.5,y+5.5,0.9,0.9,'#0d1a28');
+    px(x+6.9,y+5.7,0.6,0.6,'#fff'); px(x+13.3,y+5.7,0.6,0.6,'#fff');
   }
   ctx.restore();
   ctx.restore();
