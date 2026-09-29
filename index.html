@@ -91,13 +91,14 @@ const GIRL_W=52, GIRL_H=GIRL_W*(346/260);
 const PHONE_W=23, PHONE_H=PHONE_W*(300/180);
 const BOY_S=1.22;
 
+const BASE_FALL=3.6, BASE_SPAWN=40;
 const G={state:'start',score:0,wallet:0,girlX:80,girlTX:80,speed:2.8,groundY:0,
-  phones:[],spawnTimer:0,spawnEvery:48,fallSpeed:3.0,frame:0,animTimer:0,shake:0,pops:[],tier:0};
+  phones:[],spawnTimer:0,spawnEvery:BASE_SPAWN,fallSpeed:BASE_FALL,frame:0,animTimer:0,shake:0,pops:[],tier:0};
 
 function applyDifficulty(){
-  const tier=Math.floor(G.score/200);
-  G.fallSpeed=Math.min(3.0+tier*0.9,9.5);
-  G.spawnEvery=Math.max(48-tier*7,18);
+  const tier=Math.floor(G.score/100);
+  G.fallSpeed=Math.min(BASE_FALL+tier*0.7,10);
+  G.spawnEvery=Math.max(BASE_SPAWN-tier*5,16);
   if(tier>G.tier){
     G.tier=tier;
     G.pops.push({text:'FASTER!',x:G.girlX+GIRL_W/2,y:G.groundY-GIRL_H-14,t:0});
@@ -106,7 +107,7 @@ function applyDifficulty(){
 
 function reset(){
   G.state='playing';G.score=0;G.phones=[];G.spawnTimer=0;G.tier=0;
-  G.fallSpeed=3.0;G.spawnEvery=48;G.girlX=80;G.girlTX=80;G.frame=0;G.pops=[];
+  G.fallSpeed=BASE_FALL;G.spawnEvery=BASE_SPAWN;G.girlX=80;G.girlTX=80;G.frame=0;G.pops=[];
   document.getElementById('overlay').style.display='none';
   updateHud();
 }
