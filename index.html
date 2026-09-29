@@ -92,11 +92,21 @@ const PHONE_W=23, PHONE_H=PHONE_W*(300/180);
 const BOY_S=1.22;
 
 const G={state:'start',score:0,wallet:0,girlX:80,girlTX:80,speed:2.8,groundY:0,
-  phones:[],spawnTimer:0,spawnEvery:34,fallSpeed:5.2,frame:0,animTimer:0,shake:0,pops:[]};
+  phones:[],spawnTimer:0,spawnEvery:48,fallSpeed:3.0,frame:0,animTimer:0,shake:0,pops:[],tier:0};
+
+function applyDifficulty(){
+  const tier=Math.floor(G.score/200);
+  G.fallSpeed=Math.min(3.0+tier*0.9,9.5);
+  G.spawnEvery=Math.max(48-tier*7,18);
+  if(tier>G.tier){
+    G.tier=tier;
+    G.pops.push({text:'FASTER!',x:G.girlX+GIRL_W/2,y:G.groundY-GIRL_H-14,t:0});
+  }
+}
 
 function reset(){
-  G.state='playing';G.score=0;G.phones=[];G.spawnTimer=0;
-  G.fallSpeed=5.2;G.spawnEvery=34;G.girlX=80;G.girlTX=80;G.frame=0;G.pops=[];
+  G.state='playing';G.score=0;G.phones=[];G.spawnTimer=0;G.tier=0;
+  G.fallSpeed=3.0;G.spawnEvery=48;G.girlX=80;G.girlTX=80;G.frame=0;G.pops=[];
   document.getElementById('overlay').style.display='none';
   updateHud();
 }
@@ -266,17 +276,38 @@ function drawBoy(x,y,hits,flash,finalKnock){
   // ears
   rrect(x-0.2,y+2,2.4,4.2,1.5,skinDeep);
   rrect(x+17.8,y+2,2.4,4.2,1.5,skinDeep);
-  // hair — neat dark crop
-  ctx.fillStyle='#1f1812';
-  ctx.beginPath();ctx.roundRect((x+0.2)*scale,(y-9)*scale,19.6*scale,9.5*scale,5.5*scale);ctx.fill();
-  px(x+0.4,y-2,3.2,8.5,'#1f1812'); px(x+16.4,y-2,3.2,8.5,'#1f1812');
+  // hair — clean short side-part
+  const hair='#221910', hairLite='#2e241a';
+  ctx.fillStyle=hair;
+  // main crown
   ctx.beginPath();
-  ctx.moveTo((x+1.5)*scale,(y+0.5)*scale);
-  ctx.quadraticCurveTo((x+5)*scale,(y-4)*scale,(x+8)*scale,(y+0.2)*scale);
-  ctx.quadraticCurveTo((cx)*scale,(y-3.8)*scale,(x+12)*scale,(y+0.2)*scale);
-  ctx.quadraticCurveTo((x+15)*scale,(y-4)*scale,(x+18.5)*scale,(y+0.5)*scale);
-  ctx.lineTo((x+18.5)*scale,(y-7)*scale);
-  ctx.lineTo((x+1.5)*scale,(y-7)*scale);
+  ctx.moveTo((x+1)*scale,(y+1)*scale);
+  ctx.bezierCurveTo((x+0.5)*scale,(y-8)*scale,(x+4)*scale,(y-11)*scale,(cx)*scale,(y-11.2)*scale);
+  ctx.bezierCurveTo((x+16)*scale,(y-11)*scale,(x+19.5)*scale,(y-8)*scale,(x+19)*scale,(y+1)*scale);
+  ctx.quadraticCurveTo((x+18.5)*scale,(y-1.5)*scale,(x+16.5)*scale,(y-0.5)*scale);
+  ctx.quadraticCurveTo((cx)*scale,(y-2.2)*scale,(x+3.5)*scale,(y-0.5)*scale);
+  ctx.quadraticCurveTo((x+1.5)*scale,(y-1.5)*scale,(x+1)*scale,(y+1)*scale);
+  ctx.closePath(); ctx.fill();
+  // left side taper
+  ctx.beginPath();
+  ctx.moveTo((x+0.8)*scale,(y+1)*scale);
+  ctx.quadraticCurveTo((x-0.4)*scale,(y+3)*scale,(x+0.6)*scale,(y+6.5)*scale);
+  ctx.quadraticCurveTo((x+1.8)*scale,(y+4)*scale,(x+2.2)*scale,(y+1.5)*scale);
+  ctx.closePath(); ctx.fill();
+  // right side taper
+  ctx.beginPath();
+  ctx.moveTo((x+19.2)*scale,(y+1)*scale);
+  ctx.quadraticCurveTo((x+20.4)*scale,(y+3)*scale,(x+19.4)*scale,(y+6.5)*scale);
+  ctx.quadraticCurveTo((x+18.2)*scale,(y+4)*scale,(x+17.8)*scale,(y+1.5)*scale);
+  ctx.closePath(); ctx.fill();
+  // soft fringe / side part sweep
+  ctx.fillStyle=hairLite;
+  ctx.beginPath();
+  ctx.moveTo((x+2.5)*scale,(y-1)*scale);
+  ctx.quadraticCurveTo((x+6)*scale,(y-4.5)*scale,(x+9.5)*scale,(y-1.2)*scale);
+  ctx.quadraticCurveTo((x+13)*scale,(y-4)*scale,(x+17)*scale,(y-0.8)*scale);
+  ctx.quadraticCurveTo((x+14)*scale,(y-3.2)*scale,(cx)*scale,(y-3.5)*scale);
+  ctx.quadraticCurveTo((x+5)*scale,(y-3.5)*scale,(x+2.5)*scale,(y-1)*scale);
   ctx.closePath(); ctx.fill();
   // face
   if(hits>=3){
@@ -332,7 +363,6 @@ function update(){
   G.spawnTimer++;
   if(G.spawnTimer>=G.spawnEvery){
     G.spawnTimer=0; spawnPhone();
-    if(G.spawnEvery>16)G.spawnEvery-=1.6;
   }
   for(const p of G.phones){
     if(p.caught)continue;
@@ -341,7 +371,7 @@ function update(){
     if(p.y+PHONE_H>=catchY-6 && p.y+PHONE_H<=catchY+14){
       if(p.x+PHONE_W>G.girlX-2 && p.x<G.girlX+GIRL_W+2){
         p.caught=true; G.score+=25; G.wallet+=25; updateHud();
-        G.fallSpeed=Math.min(G.fallSpeed+0.14,11);
+        applyDifficulty();
         G.pops.push({text:'+$25',x:G.girlX+GIRL_W/2,y:G.groundY-GIRL_H-6,t:0});
       }
     }
